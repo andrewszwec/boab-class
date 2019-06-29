@@ -11,10 +11,14 @@ rgx_date_ydm = re.compile(r'(?i)((?P<year>([1,2]\d{3})|([1,2]\d)))(?P<sep>\s|,|\
 
 def __parsedate(matchobj,ordering):
     """Takes a date match object and an ordering returns a python datetime format string for the date"""
+    dayformat = ""
+    monthformat = ""
+    yearformat = ""
+    sep = ""
     year = matchobj.group("year")
     month = matchobj.group("month")
     day = matchobj.group("day")
-    sep = matchobj.group("sep")
+    sep = "" if matchobj.group("sep") is None else matchobj.group("sep")
 
     dayformat = "%d" if day else ""
 
@@ -29,7 +33,6 @@ def __parsedate(matchobj,ordering):
     except:
         monthformat = "%B" if len(month)>3 else "%b"
 
-
     if ordering == 'dmy':
         formatstring = dayformat+sep+monthformat+sep+yearformat
     elif ordering == 'mdy':
@@ -43,18 +46,18 @@ def __parsedate(matchobj,ordering):
 
 def seekdate(string):
     """Seeks for a something that looks like a date in a string and returns a format string if it finds one"""
-
+    match = None
     if rxg_date_dmy.match(string):
-        match = rgx_date_dmy.match(string)
+        match = rxg_date_dmy.match(string)
         return __parsedate(match,'dmy')
     elif rgx_date_mdy.match(string):
-        match = rgx_date_mdy(match,'myd')
+        match = rgx_date_mdy.match(string)
         return  __parsedate(match,'myd')
     elif rgx_date_ymd.match(string):
-        match = rgx_date_ymd(match,'ymd')
+        match = rgx_date_ymd.match(string)
         return __parsedate(match,'ymd')
     elif rgx_date_ydm.match(string):
-        match = rgx_date_ydm(match,'ydm')
+        match = rgx_date_ydm.match(string)
         return __parsedate(match,'ydm')
     else:
         return None
@@ -62,7 +65,7 @@ def seekdate(string):
 def isdatecol(pd_series,sample_size=10):
     """Assesses whether the column contains dates and returns a datetime format string if it does. Otherwise returns a null"""
     pd_series_notnull = pd_series.dropna()
-    samples = pd_series_notnull.astype(str).sample(sample_size)
+    samples = pd_series_notnull.astype(str).sample(sample_size,replace=True)
 
     dateformatstrings = samples.apply(seekdate)
 
