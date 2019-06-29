@@ -59,10 +59,10 @@ def seekdate(string):
     else:
         return None
 
-def isdatecol(pd_series,sampple_size=10):
+def isdatecol(pd_series,sample_size=10):
     """Assesses whether the column contains dates and returns a datetime format string if it does. Otherwise returns a null"""
     pd_series_notnull = pd_series.dropna()
-    samples = pd_series_notnull.astype(str).sample(sampple_size)
+    samples = pd_series_notnull.astype(str).sample(sample_size)
 
     dateformatstrings = samples.apply(seekdate)
 
