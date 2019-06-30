@@ -36,6 +36,7 @@ import os
 import pandas as pd 
 import re
 import numpy as np
+import datetimeseek
 
 
 class Boab(object):
@@ -108,13 +109,13 @@ class Boab(object):
                 time_cols.append(match_obj.group())
         return time_cols
 
-    def __which_date_col(self, cols):
+    def __which_date_col(self,cols):
         # Look for date columns
         date_cols = []
-        for i, c in enumerate(cols):
-            match_obj = re.match("datetime|date|dte", c, flags=re.IGNORECASE)
-            if match_obj:
-                date_cols.append(match_obj.group())
+        for col in cols:
+            if datetimeseek.isdatecol(self.df.col):
+                date_cols.append(col)
+
         return date_cols
         
 
