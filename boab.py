@@ -79,18 +79,25 @@ class Boab(object):
         self.df.columns = col_names
 
     def load_data(self, filename, sep=','):
-        """
-        load_data
-        check file extension if csv or xlsx or dat
-        """
-        ext = os.path.splitext(filename)[-1].replace('.','')
-        if ext == 'csv':
-            self.df = pd.read_csv(filename, sep=sep)
-            # return self.df
-        elif ext == 'xlsx' or ext == '.xls':
-            self.df = pd.read_excel(filename)
-            # return self.df
-        self.fix_col_names()
+            """
+            load_data
+            check file extension if csv or xlsx or dat
+            """
+            ext = os.path.splitext(filename)[-1].replace('.','')
+            if ext in ['csv', 'tsv', 'dat', 'data', 'txt', '']:
+                # Check csv file to find separator
+                import csv
+                with open(filename, newline='') as csvfile:
+                    dialect = csv.Sniffer().sniff(csvfile.read(1024))
+                    separator = dialect.delimiter
+                    print("\n[INFO] File separator: '{}'".format(separator))
+
+                self.df = pd.read_csv(filename, sep=separator)
+                # return self.df
+            elif ext == 'xlsx' or ext == 'xls':
+                self.df = pd.read_excel(filename)
+                # return self.df
+            self.fix_col_names()
         
     def __which_time_col(self, cols):
         # Look for date columns
