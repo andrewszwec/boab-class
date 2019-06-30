@@ -380,3 +380,19 @@ class Boab(object):
 #        'pt08_s5_o3_', 't', 'rh', 'ah', 'date_day', 'date_month', 'date_year']
 # target = 'co_gt_'
 # bo.build_ts_regression(feature_list=feature_list, target=target, dt_index='date')
+
+############################################################
+## CAR DATA
+############################################################
+
+bo = Boab()
+bo.load_data('car_data.csv')
+bo.fix_types()
+bo.fix_missing()
+bo.make_discrete_datetime_cols()
+print(bo.df.head())
+
+# Build normal regression
+feature_list = ['cyclinders', 'displacement', 'hp', 'weight', 'acceleration', 'year', 'origin']
+target = 'mpg'
+bo.build_regression(feature_list=feature_list, target=target)
